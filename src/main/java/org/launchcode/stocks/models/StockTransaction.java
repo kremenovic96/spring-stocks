@@ -45,7 +45,11 @@ public class StockTransaction extends AbstractEntity {
         this.symbol = stockHolding.getSymbol();
         this.type = type;
         this.userId = stockHolding.getOwnerId();
-        this.price = Stock.lookupStock(symbol).getPrice();
+        //
+        this.price = -1;
+        try{
+        this.price = Stock.lookupStock(symbol).getPrice();}
+        catch (Exception e){System.out.println("EXCEPTION IN STOCKTRANSACTION");}
     }
 
     @ManyToOne
