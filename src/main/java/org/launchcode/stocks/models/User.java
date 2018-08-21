@@ -26,6 +26,7 @@ public class User extends AbstractEntity {
 
     private String userName;
     private String hash;
+    private float cash = 100;
 
     /**
      * A collection of all the StockHoldings this user owns. The keys are stock symbols, ie "YHOO"
@@ -38,6 +39,7 @@ public class User extends AbstractEntity {
         this.hash = PasswordHash.getHash(password);
         this.userName = userName;
         this.portfolio = new HashMap<String, StockHolding>();
+        //
     }
 
     // empty constructor so Hibernate can do its magic
@@ -85,4 +87,11 @@ public class User extends AbstractEntity {
         portfolio.put(holding.getSymbol(), holding);
     }
 
+    public float getCash() {
+        return cash;
+    }
+
+    public void setCash(float cash) {
+        this.cash = cash;
+    }
 }

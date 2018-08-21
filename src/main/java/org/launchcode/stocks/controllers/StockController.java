@@ -3,6 +3,7 @@ package org.launchcode.stocks.controllers;
 import org.launchcode.stocks.models.Stock;
 import org.launchcode.stocks.models.StockHolding;
 import org.launchcode.stocks.models.StockLookupException;
+import org.launchcode.stocks.models.User;
 import org.launchcode.stocks.models.dao.StockHoldingDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,11 +65,26 @@ public class StockController extends AbstractController {
     public String buy(String symbol, int numberOfShares, HttpServletRequest request, Model model) {
 
         // TODO - Implement buy action
-
+        int userId = (int)request.getSession().getAttribute(userSessionKey);
+        User user = userDao.findByUid(userId);
+        StockHolding stockHolding;
         model.addAttribute("title", "Buy");
         model.addAttribute("action", "/buy");
         model.addAttribute("buyNavClass", "active");
+        try {
+            float moneySpent = Stock.lookupStock(symbol).getPrice() * numberOfShares;
+            if(moneySpent > user.getCash()){
+                throw new Exception("Insufficient funds biatchh");
+            }
+            stockHolding = StockHolding.buyShares(user, symbol, numberOfShares);
+            user.setCash(user.getCash() - moneySpent);
+            //System.out.println("SHAREEEES "+stockHolding.getSharesOwned());
+            stockHoldingDao.save(stockHolding);
+           // stockHoldingDao.findBySymbolAndOwnerId(symbol, userId);
+            model.addAttribute("confirmMessage", "Owning shares: " + stockHolding.getSharesOwned() +"cash left: " + user.getCash());
 
+
+        } catch (Exception e){System.out.println("EXCEPTIOOON: " + e.getMessage()); return "transaction_form";}
         return "transaction_confirm";
     }
 
@@ -84,10 +100,24 @@ public class StockController extends AbstractController {
     public String sell(String symbol, int numberOfShares, HttpServletRequest request, Model model) {
 
         // TODO - Implement sell action
-
+        int userId = (int)request.getSession().getAttribute(userSessionKey);
+        User user = userDao.findByUid(userId);
+        StockHolding stockHolding;
         model.addAttribute("title", "Sell");
         model.addAttribute("action", "/sell");
         model.addAttribute("sellNavClass", "active");
+        try {
+            stockHolding = StockHolding.sellShares(user, symbol, numberOfShares);
+
+           // System.out.println("SHAREEEES "+stockHolding.getSharesOwned());
+            float moneyGain = Stock.lookupStock(symbol).getPrice() * numberOfShares;
+            user.setCash(user.getCash() + moneyGain);
+            stockHoldingDao.save(stockHolding);
+            //stockHoldingDao.findBySymbolAndOwnerId(symbol, userId);
+            model.addAttribute("confirmMessage", "Owning shares: " + stockHolding.getSharesOwned()+"cash left: "+user.getCash());
+
+
+        } catch (Exception e){System.out.println("EXCEPTIOOON: " + e.getMessage()); return "transaction_form";}
 
         return "transaction_confirm";
     }

@@ -51,7 +51,8 @@ public class StockTransaction extends AbstractEntity {
         this.price = Stock.lookupStock(symbol).getPrice();}
         catch (Exception e){System.out.println("EXCEPTION IN STOCKTRANSACTION");}
     }
-
+    ///
+    public StockTransaction(){}//
     @ManyToOne
     public StockHolding getStockHolding() {
         return stockHolding;

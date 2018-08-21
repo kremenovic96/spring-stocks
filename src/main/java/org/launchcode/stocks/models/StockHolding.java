@@ -149,7 +149,6 @@ public class StockHolding extends AbstractEntity {
         holding.buyShares(numberOfShares);
         
        // TODO - update user cash on buy
-
         return holding;
     }
 

@@ -11,6 +11,13 @@
     <div id="middle">
 
         <!-- TODO - Display portfolio -->
+        <table>
+            <tr th:each="key : ${portfolio.keySet()}">
+                <td th:text="${key}">key</td>
+                <td th:text="${portfolio.get(key).sharesOwned}"></td>
+                <td th:text="${portfolio.get(key).sharesOwned}"></td>
+            </tr>
+        </table>
         <p>Portfolio!</p>
 
     </div>
